@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>7-Site Skinfold Body Fat Calculator</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #1a1d24;
+    --panel-2: #232730;
+    --text: #e6e8ee;
+    --muted: #8a93a6;
+    --accent: #4f8cff;
+    --accent-2: #66d28d;
+    --border: #2a2f3a;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 32px 16px;
+  }
+
+  .container {
+    max-width: 880px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    margin: 0 0 4px;
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    margin-bottom: 24px;
+    font-size: 14px;
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .field {
+    display: grid;
+    grid-template-columns: 260px 1fr 170px;
+    align-items: center;
+    gap: 22px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .field:last-child { border-bottom: none; }
+
+  .field img {
+    width: 100%;
+    height: 235px;
+    object-fit: cover;
+    border-radius: 10px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    display: block;
+  }
+
+  .field label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .field label .name {
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .field label .num {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .field input[type="number"] {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 16px;
+    text-align: right;
+  }
+
+  .field input[type="number"]:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 4px;
+  }
+
+  .meta label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .meta input, .meta select {
+    padding: 10px 12px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 15px;
+  }
+
+  .meta input:focus, .meta select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  button {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  button:hover { opacity: 0.9; }
+
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-secondary { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
+
+  .result {
+    text-align: center;
+    padding: 24px;
+    background: linear-gradient(135deg, var(--panel), var(--panel-2));
+  }
+
+  .result .value {
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin: 4px 0;
+  }
+
+  .result .label {
+    color: var(--muted);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .result .sum {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 8px;
+  }
+
+  .error {
+    color: #ff6b6b;
+    font-size: 13px;
+    text-align: center;
+    margin-top: 8px;
+    min-height: 18px;
+  }
+
+  @media (max-width: 720px) {
+    body { padding: 16px 10px; }
+    .panel { padding: 14px; }
+    h1 { font-size: 20px; }
+
+    .field {
+      grid-template-columns: 185px 1fr;
+      grid-template-areas:
+        "image label"
+        "image input";
+      gap: 10px 14px;
+      padding: 14px 0;
+    }
+    .field img {
+      grid-area: image;
+      height: 185px;
+    }
+    .field label { grid-area: label; align-self: end; }
+    .field input[type="number"] { grid-area: input; align-self: start; }
+    .field label .name { font-size: 15px; }
+  }
+
+  @media (max-width: 420px) {
+    .field {
+      grid-template-columns: 145px 1fr;
+      gap: 8px 12px;
+    }
+    .field img { height: 145px; }
+    .field label .name { font-size: 14px; }
+    .meta { grid-template-columns: 1fr; }
+    .actions { flex-direction: column; }
+    .result .value { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>7-Site Skinfold Body Fat Calculator</h1>
+    <div class="subtitle">Jackson &amp; Pollock formula — measurements in millimeters</div>
+
+    <div class="panel" id="fields"></div>
+
+    <div class="panel">
+      <div class="meta">
+        <label>
+          Age
+          <input type="number" id="age" min="1" max="120" step="1" placeholder="e.g. 28">
+        </label>
+        <label>
+          Sex
+          <select id="sex">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </label>
+      </div>
+      <div class="actions">
+        <button class="btn-primary" id="calcBtn">Calculate</button>
+        <button class="btn-secondary" id="resetBtn">Reset</button>
+      </div>
+      <div class="error" id="error"></div>
+    </div>
+
+    <div class="panel result">
+      <div class="label">Body Fat</div>
+      <div class="value" id="bodyFat">—</div>
+      <div class="sum" id="sumLine">Sum of skinfolds: —</div>
+    </div>
+  </div>
+
+<script>
+  const sites = [
+    { key: "chest",       name: "Chest",       img: "images/chest.png" },
+    { key: "midaxillary", name: "Midaxillary", img: "images/midaxillary.png" },
+    { key: "subscapular", name: "Subscapular", img: "images/subscapular.png" },
+    { key: "triceps",     name: "Triceps",     img: "images/triceps.png" },
+    { key: "suprailiac",  name: "Suprailiac",  img: "images/suprailiac.png" },
+    { key: "abdomen",     name: "Abdomen",     img: "images/abdomen.png" },
+    { key: "thigh",       name: "Thigh",       img: "images/thigh.png" },
+  ];
+
+  const fieldsEl = document.getElementById("fields");
+  sites.forEach((site, i) => {
+    const row = document.createElement("div");
+    row.className = "field";
+    row.innerHTML = `
+      <img src="${site.img}" alt="${site.name} site">
+      <label for="sf-${site.key}">
+        <span class="name">${site.name}</span>
+        <span class="num">Site ${i + 1}</span>
+      </label>
+      <input type="number" id="sf-${site.key}" min="0" step="0.1" placeholder="mm">
+    `;
+    fieldsEl.appendChild(row);
+  });
+
+  const errorEl = document.getElementById("error");
+  const bodyFatEl = document.getElementById("bodyFat");
+  const sumLineEl = document.getElementById("sumLine");
+
+  function calculate() {
+    errorEl.textContent = "";
+    const values = sites.map(s => parseFloat(document.getElementById(`sf-${s.key}`).value));
+    const age = parseInt(document.getElementById("age").value, 10);
+    const sex = document.getElementById("sex").value;
+
+    if (values.some(v => isNaN(v) || v < 0)) {
+      errorEl.textContent = "Please enter all 7 skinfold values (mm).";
+      return;
+    }
+    if (isNaN(age) || age <= 0) {
+      errorEl.textContent = "Please enter a valid age.";
+      return;
+    }
+
+    const sum = values.reduce((a, b) => a + b, 0);
+
+    // Jackson & Pollock 7-site
+    let density;
+    if (sex === "male") {
+      density = 1.112 - (0.00043499 * sum) + (0.00000055 * sum * sum) - (0.00028826 * age);
+    } else {
+      density = 1.097 - (0.00046971 * sum) + (0.00000056 * sum * sum) - (0.00012828 * age);
+    }
+    const bodyFat = ((4.95 / density) - 4.5) * 100;
+
+    bodyFatEl.textContent = `${bodyFat.toFixed(2)}%`;
+    sumLineEl.textContent = `Sum of skinfolds: ${sum.toFixed(1)} mm`;
+  }
+
+  function reset() {
+    sites.forEach(s => document.getElementById(`sf-${s.key}`).value = "");
+    document.getElementById("age").value = "";
+    bodyFatEl.textContent = "—";
+    sumLineEl.textContent = "Sum of skinfolds: —";
+    errorEl.textContent = "";
+  }
+
+  document.getElementById("calcBtn").addEventListener("click", calculate);
+  document.getElementById("resetBtn").addEventListener("click", reset);
+
+  document.querySelectorAll('input[type="number"]').forEach(el => {
+    el.addEventListener("keydown", e => { if (e.key === "Enter") calculate(); });
+  });
+</script>
+</body>
+</html>
